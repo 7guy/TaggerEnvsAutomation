@@ -1,8 +1,26 @@
 import pyautogui
 import webbrowser
 import time
+import ctypes
 PAUSE = 2
 PAUSE2 = 1
+
+
+def detect_keyboard_language():
+    user32 = ctypes.WinDLL('user32', use_last_error=True)
+    handle = user32.GetForegroundWindow()
+    threadid = user32.GetWindowThreadProcessId(handle, 0)
+    layout_id = user32.GetKeyboardLayout(threadid)
+    language_id = layout_id & (2 ** 16 - 1)
+    # Convert the keyboard language id from decimal to hexadecimal
+    language_id_hex = hex(language_id)
+    if language_id_hex != '0x409': # Check if the hex value related to english:
+        pyautogui.keyDown('winleft')  # hold down the windows key
+        pyautogui.press('space')  # press the space key
+        pyautogui.keyUp('winleft') # release
+    else:
+        pass
+
 
 
 def open_sensi_timeline_chrome():
@@ -32,6 +50,7 @@ def set_timeline(start_time):
 def run_environments(list, special_envs, uninstant_envs, start_time):
     open_sensi_timeline_chrome()
     time.sleep(PAUSE)
+    detect_keyboard_language()
     set_timeline(start_time)
     count = 1
     for i in list:  # load all environments, 3 per tab

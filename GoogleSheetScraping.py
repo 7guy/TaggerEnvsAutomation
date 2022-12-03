@@ -1,6 +1,26 @@
 import gspread
 import pandas as pd
 from oauth2client.service_account import ServiceAccountCredentials
+from turtle import Screen
+
+
+def get_shift_info():
+    screen = Screen()
+    valid_shift_numbers = ['5', '6']
+    valid_tagger_numbers = ['1', '2', '3', '4', '5', '6']
+    valid_start_hours = ['00:00', '05:00', '10:00', '15:00', '19:00']
+    shift_number_of_taggers = screen.textinput(title="Shift info", prompt="How many tagger in the shift?")
+    tagger_number = screen.textinput(title="Shift info", prompt="What your tagger number?")
+    start_time = screen.textinput(title="Shift info", prompt="What hour the shift starts?")
+    while ((shift_number_of_taggers not in valid_shift_numbers) or (tagger_number not in valid_tagger_numbers)
+        or (start_time not in valid_start_hours)):
+        shift_number_of_taggers = screen.textinput(title="Shift info", prompt="How many tagger in the shift?")
+        tagger_number = screen.textinput(title="Shift info", prompt="What your tagger number?")
+        start_time = screen.textinput(title="Shift info", prompt="What hour the shift starts?")
+    first_loading_time = list(start_time)
+    first_loading_time[3] = '1'
+    first_loading_time = ''.join(first_loading_time)
+    return  shift_number_of_taggers, tagger_number, first_loading_time
 
 
 def google_sheet_control():
@@ -33,15 +53,7 @@ def google_sheet_control():
     special_envs_list = special_envs_table.values.tolist()
     uninstant_envs_list = uninstant_envs_table.values.tolist()
 
-    # choose shift type (5 or 6 taggers)
-    number_of_taggers = input('How many taggers in the shift? 5 or 6? --> ')
-    # choose tagger number
-    tagger_number = input('Which tagger are you today? --> ')
-    # choose start time and add 10 minutes
-    start_time = input("choose shift start time: 10:00 / 15:00 / 19:00 / 00:00 / 05:00 --> ")
-    first_loading_time = list(start_time)
-    first_loading_time[3] = '1'
-    first_loading_time = ''.join(first_loading_time)
+    number_of_taggers, tagger_number, first_loading_time = get_shift_info()
 
     if int(number_of_taggers) == 6:
         i = 0
